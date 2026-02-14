@@ -3,24 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <title>Twitch Pet</title>
+<style>
+body { margin:0; overflow:hidden; font-family:sans-serif; }
 
-<link rel="stylesheet" href="style.css">
+#pet {
+  position:absolute;
+  bottom:20px;
+  right:20px;
+  width:220px;
+}
 
-<script src="https://unpkg.com/tmi.js@1.8.5/dist/tmi.min.js"></script>
+.ui {
+  position:absolute;
+  bottom:10px;
+  right:10px;
+}
+
+.bar {
+  width:200px;
+  height:16px;
+  background:#222;
+  margin:3px 0;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.fill {
+  height:100%;
+  background:#4caf50;
+  width:100%;
+  transition:0.4s;
+}
+</style>
 </head>
-
 <body>
 
 <img id="pet" src="sprites/idle.png">
 
 <div class="ui">
-  ❤️ <div class="bar"><div id="health" class="fill"></div></div>
-  🍗 <div class="bar"><div id="hunger" class="fill"></div></div>
-  🎮 <div class="bar"><div id="boredom" class="fill"></div></div>
+❤️ <div class="bar"><div id="health" class="fill"></div></div>
+🍗 <div class="bar"><div id="hunger" class="fill"></div></div>
+🎮 <div class="bar"><div id="boredom" class="fill"></div></div>
 </div>
 
-<script src="script.js"></script>
-<script src="twitch.js"></script>
+<script>
+let stats = {
+  health: 100,
+  hunger: 100,
+  boredom: 100
+};
 
+const decay = {
+  hunger: 2,
+  boredom: 3
+};
+
+function clamp(v){ return Math.max(0, Math.min(100,v)); }
+
+function tick(){
+
+  stats.hunger = clamp(stats.hunger - decay.hunger);
+  stats.boredom = clamp(stats.boredom - decay.boredom);
+
+  if(stats.hunger < 30) stats.health -= 1;
+  if(stats.boredom < 20) stats.health -= 1;
+
+  stats.health = clamp(stats.health);
+
+  updateUI();
+}
+
+function getState(){
+
+  if(stats.health <= 0) return "dead";
+  if(stats.health < 25) return "sick";
+  if(stats.hunger < 30) return "hungry";
+  if(stats.boredom < 30) return "bored";
+  if(stats.health > 80 && stats.hunger > 80 && stats.boredom > 80)
+    return "happy";
+
+  return "idle";
+}
+
+function updateUI(){
+
+  health.style.width = stats.health + "%";
+  hunger.style.width = stats.hunger + "%";
+  boredom.style.width = stats.boredom + "%";
+
+  pet.src = "sprites/" + getState() + ".png";
+}
+
+setInterval(tick, 5000);
+updateUI();
+
+
+// ---- TEST COMMANDS (simulan chat) ----
+
+window.feed = () => stats.hunger = clamp(stats.hunger + 25);
+window.play = () => stats.boredom = clamp(stats.boredom + 30);
+window.heal = () => stats.health = clamp(stats.health + 20);
+
+</script>
 </body>
 </html>
