@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Twitch Pet</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://unpkg.com/tmi.js@1.8.5/dist/tmi.min.js"></script>
+</head>
+
+<body>
+
+<img id="pet" src="sprites/idle.png">
+
+<div class="ui">
+  ❤️ <div class="bar"><div id="health" class="fill"></div></div>
+  🍗 <div class="bar"><div id="hunger" class="fill"></div></div>
+  🎮 <div class="bar"><div id="boredom" class="fill"></div></div>
+</div>
+
+<script src="script.js"></script>
+<script src="twitch.js"></script>
+
+</body>
+</html>
